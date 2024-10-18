@@ -12,6 +12,7 @@ class Tetromino:
         print("Rotated by dir: ", direction)
 
     def get_shape2d(self):
+        print(self.name)
         return self.shape
 
     def get_position2d(self):

@@ -12,7 +12,6 @@ class Well:
         for i in range(self.height):
             for j in range(self.width):
                 self.grid[i][j] = Cell()
-        print("set Grid Stub")
 
     def getGrid(self):
         return self.grid
@@ -24,7 +23,15 @@ class Well:
         print("Check place piece stub")
 
     def checkGrid(self):
-        print("Check Grid Stub")
+        for i in range(self.height):
+            cell_count = 0
+            for j in range(self.width):
+                empty, colour = self.grid[i][j].getStatus()
+                if not empty:
+                    cell_count += 1
+            if cell_count == self.width:
+                self.clearLine(i)
 
-    def clearLine(self):
-        print("Clear line Stub")
+    def clearLine(self, i):
+        del self.grid[i]
+        self.grid.insert(0, [Cell()] * self.width)
