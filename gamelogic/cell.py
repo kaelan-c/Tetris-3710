@@ -6,3 +6,9 @@ class Cell:
     def fillCell(self, colour):
         self.colour = colour
         self.empty = False
+
+    def getEmptyState(self):
+        return self.empty
+
+    def getColour(self):
+        return self.colour

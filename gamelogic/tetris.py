@@ -7,9 +7,13 @@ class Tetris:
     def __init__(self):
         self.well = Well()
         self.bag = Bag()
+        self.piece_store
+        self.current_piece
 
     def spawnPiece(self):
-        print("Spawn Peice Stub")
+        self.current_piece = self.bag.getNextPeice()
 
     def holdPiece(self):
-        print("Spawn Peice Stub")
+        self.piece_store = self.current_piece
+        self.current_piece = self.bag.getNextPeice()
+

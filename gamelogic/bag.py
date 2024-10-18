@@ -1,4 +1,5 @@
 import random
+
 from .constants import PIECES
 from .tetromino import Tetromino
 
