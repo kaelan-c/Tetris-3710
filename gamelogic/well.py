@@ -1,18 +1,17 @@
-from cell import Cell
-from constants import GRID
-
+from .cell import Cell
+from .constants import GRID
 
 class Well:
     def __init__(self):
-        self.height = GRID.Height
-        self.width = GRID.Width
+        self.height = GRID["Height"]
+        self.width = GRID["Width"]
+        self.grid = [[None for _ in range(self.width)] for _ in range(self.height)]  # Initialize the grid
 
     def generateGrid(self):
-        self.grid = []
         for i in range(self.height):
             for j in range(self.width):
-                self.grid[i][j] = Cell()
-        print("set Grid Stub")
+                self.grid[i][j] = Cell()  # Assign a Cell instance to each position
+        print("Grid generated")
 
     def getGrid(self):
         return self.grid
