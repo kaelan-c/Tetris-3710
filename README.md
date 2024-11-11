@@ -23,4 +23,10 @@
         - Video Tutorial Playlist: https://www.youtube.com/watch?v=LNMz52Pkl_U&list=PL1P11yPQAo7oEAGuPcqMnn9ZWHLWP3-Lc
         - Panda3D game dev book: https://github.com/fireclawthefox/panda3d-tutorial
 
-
+# Controls:
+    - Arrow keys to move the block
+    - Q to rotate on the X-axis
+    - W to rotate on the Y-axis
+    - E to rotate on the Z-axis
+    - SPACE to move the block down
+    - 1, 2 to change the camera angle
