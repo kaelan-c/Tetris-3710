@@ -18,10 +18,19 @@ class Tetris(ShowBase):
         }
 
         # NEED TO IMPLEMENT A MOVING CAMERA
-        # Set up camera to view grid vertically
         self.disableMouse()
-        self.camera.setPos(5, -20, 5)
-        self.camera.lookAt(1.5, 1.5, 5)
+        # maybe add more camera presets 
+        self.camera_positions = [
+            (Point3(2.5, -20, 5), Point3(2.5, 2.5, 5)),  # Front view
+            (Point3(2.5, 2.5, 40), Point3(2.5, 2.5, 0)),  # Top view
+        ]
+
+        self.current_view = 0
+        self.set_camera_view(self.current_view)
+        
+        # Bind keys to switch scenes
+        self.accept("1", self.switch_to_view, [0])
+        self.accept("2", self.switch_to_view, [1])
 
         # Grid dimensions
         self.grid_width = 5
@@ -59,6 +68,17 @@ class Tetris(ShowBase):
         # Task to update game logic and block movement
         # THIS IS THE MAIN GAMELOOP 
         self.taskMgr.add(self.update_task, "updateTask")
+
+    def set_camera_view(self, view_index):
+        """Sets the camera position and orientation based on view index."""
+        position, look_at = self.camera_positions[view_index]
+        self.camera.setPos(position)
+        self.camera.lookAt(look_at)
+    
+    def switch_to_view(self, view_index):
+        """Switches to the specified camera view."""
+        self.current_view = view_index
+        self.set_camera_view(self.current_view)
 
     # Draw the 3D grid
     def draw_grid_outline(self):
@@ -229,7 +249,8 @@ class Tetris(ShowBase):
             self.lock_block()
 
             # Additionally, check if any row is complete and clear it
-            self.clear_complete_rows()
+            for i in range(self.grid_height):
+                self.clear_complete_rows()
 
         return task.cont  # Continue the task
         
@@ -311,6 +332,7 @@ class Tetris(ShowBase):
 
     # Locks the block in place, then spawns a new block
     def lock_block(self):
+        """Locks the current block in place and spawns a new block."""
         for pos, block_part in self.current_block_parts:
             # Round position coordinates to avoid floating-point precision issues
             rounded_pos = (round(pos.x), round(pos.y), round(pos.z))
@@ -320,6 +342,7 @@ class Tetris(ShowBase):
 
     # Repsawn the block, debugging function not part of the game currently
     def respawn_block(self):
+        """Respawns the current block to the starting position."""
         self.current_block_parts.clear()  # Clear current parts
         self.spawn_new_block()  # Spawn a new block
 

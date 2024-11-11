@@ -70,13 +70,11 @@ class Tetris(ShowBase):
         self.taskMgr.add(self.update_task, "updateTask")
 
     def set_camera_view(self, view_index):
-        """Sets the camera position and orientation based on view index."""
         position, look_at = self.camera_positions[view_index]
         self.camera.setPos(position)
         self.camera.lookAt(look_at)
     
     def switch_to_view(self, view_index):
-        """Switches to the specified camera view."""
         self.current_view = view_index
         self.set_camera_view(self.current_view)
 
@@ -118,7 +116,7 @@ class Tetris(ShowBase):
 
         # Create individual block parts based on the shape coordinates
         for x_offset, y_offset in self.block_shapes[self.current_block_type]:
-            block_part = self.loader.loadModel("models/box")  # Replace with actual model path
+            block_part = self.loader.loadModel("models/box")  # Replace ("Tetronimos/xxxxx")
             part_pos = self.current_block_pos + Point3(x_offset, y_offset, 0)
             block_part.setPos(part_pos)
             block_part.reparentTo(self.render)
