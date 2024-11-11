@@ -311,7 +311,6 @@ class Tetris(ShowBase):
 
     # Locks the block in place, then spawns a new block
     def lock_block(self):
-        """Locks the current block in place and spawns a new block."""
         for pos, block_part in self.current_block_parts:
             # Round position coordinates to avoid floating-point precision issues
             rounded_pos = (round(pos.x), round(pos.y), round(pos.z))
@@ -321,7 +320,6 @@ class Tetris(ShowBase):
 
     # Repsawn the block, debugging function not part of the game currently
     def respawn_block(self):
-        """Respawns the current block to the starting position."""
         self.current_block_parts.clear()  # Clear current parts
         self.spawn_new_block()  # Spawn a new block
 
