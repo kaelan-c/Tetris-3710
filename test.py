@@ -1,11 +1,15 @@
 from math import ceil, cos, floor, radians, sin
 import random
 from direct.showbase.ShowBase import ShowBase
+from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import LineSegs, NodePath, Vec3, LColor, Point3
 
 class Tetris(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
+
+        self.score = 0 
+        self.score_text = OnscreenText(text=f'Score: {self.score}', pos=(-0.9, 0.9), scale=0.1, mayChange=True)
 
         # Block Shapes
         self.block_shapes = {
@@ -70,11 +74,13 @@ class Tetris(ShowBase):
         self.taskMgr.add(self.update_task, "updateTask")
 
     def set_camera_view(self, view_index):
+        """Sets the camera position and orientation based on view index."""
         position, look_at = self.camera_positions[view_index]
         self.camera.setPos(position)
         self.camera.lookAt(look_at)
     
     def switch_to_view(self, view_index):
+        """Switches to the specified camera view."""
         self.current_view = view_index
         self.set_camera_view(self.current_view)
 
@@ -116,7 +122,7 @@ class Tetris(ShowBase):
 
         # Create individual block parts based on the shape coordinates
         for x_offset, y_offset in self.block_shapes[self.current_block_type]:
-            block_part = self.loader.loadModel("models/box")  # Replace ("Tetronimos/xxxxx")
+            block_part = self.loader.loadModel("models/box")  # Replace with actual model path
             part_pos = self.current_block_pos + Point3(x_offset, y_offset, 0)
             block_part.setPos(part_pos)
             block_part.reparentTo(self.render)
@@ -238,7 +244,7 @@ class Tetris(ShowBase):
     def update_task(self, task):
         # Check if the block can move down
         can_move_down = all(self.is_position_valid(Point3(pos.x, pos.y, floor(pos.z - 0.01))) for pos, _ in self.current_block_parts)
-
+        print(self.score)
         if can_move_down:
             # Automatically move the block down
             self.move_block(0, 0, -0.01)
@@ -272,6 +278,7 @@ class Tetris(ShowBase):
                     block = self.block_positions.pop((x, y, z), None)
                     if block:
                         block.removeNode()  # Remove the block from the scene
+                        self.update_score()
 
             # Clear all blocks in the complete columns along the y-axis
             for x in rows_to_clear_y:
@@ -279,6 +286,7 @@ class Tetris(ShowBase):
                     block = self.block_positions.pop((x, y, z), None)
                     if block:
                         block.removeNode()  # Remove the block from the scene
+                        self.update_score()
 
             for x in sorted(rows_to_clear_y):
                 for y in range(self.grid_depth):  # For each y in the cleared column
@@ -286,6 +294,8 @@ class Tetris(ShowBase):
                     block = self.block_positions.pop((x, y, z), None)
                     if block:
                         block.removeNode()  # Remove the block from the scene
+                        self.update_score()
+                        
 
                 # Shift all blocks down in the column at x, filling all empty positions
                 for current_z in range(z + 1, self.grid_height):
@@ -343,6 +353,10 @@ class Tetris(ShowBase):
         """Respawns the current block to the starting position."""
         self.current_block_parts.clear()  # Clear current parts
         self.spawn_new_block()  # Spawn a new block
+
+    def update_score(self):
+        self.score += 100
+        self.score_text.setText(f'Score: {self.score}')
 
 # Initialize the game 
 app = Tetris()
