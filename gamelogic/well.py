@@ -1,8 +1,13 @@
 from .cell import Cell
 from .constants import GRID
+from .cell import Cell
+from .constants import GRID
 
 class Well:
     def __init__(self):
+        self.height = GRID["Height"]
+        self.width = GRID["Width"]
+        self.grid = [[None for _ in range(self.width)] for _ in range(self.height)]  # Initialize the grid
         self.height = GRID["Height"]
         self.width = GRID["Width"]
         self.grid = [[None for _ in range(self.width)] for _ in range(self.height)]  # Initialize the grid

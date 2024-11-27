@@ -1,6 +1,8 @@
 import random
 from .constants import PIECES
 from .tetromino import Tetromino
+from .constants import PIECES
+from .tetromino import Tetromino
 
 from .constants import PIECES
 from .tetromino import Tetromino
@@ -24,6 +26,8 @@ class Bag:
     def viewNextPeice(self):
         return self.bag[-1]if self.bag else None
 
+    def getNextPiece(self):
+        if not self.bag:
     def getNextPiece(self):
         if not self.bag:
             self.fillBag()

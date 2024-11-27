@@ -1,9 +1,12 @@
 from math import ceil, cos, floor, radians, sin
 import random
+from math import ceil, cos, floor, radians, sin
+import random
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import LineSegs, NodePath, Vec3, LColor, Point3
 
+class Tetris(ShowBase):
 class Tetris(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
