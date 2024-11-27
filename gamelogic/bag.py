@@ -28,7 +28,5 @@ class Bag:
 
     def getNextPiece(self):
         if not self.bag:
-    def getNextPiece(self):
-        if not self.bag:
             self.fillBag()
         return self.bag.pop()
