@@ -1,6 +1,6 @@
-from tetromino import Tetromino
-from well import Well
-from bag import Bag
+from .tetromino import Tetromino
+from .well import Well
+from .bag import Bag
 
 
 class Tetris:
