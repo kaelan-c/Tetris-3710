@@ -124,7 +124,7 @@ class Tetris(ShowBase):
 
         # Create individual block parts based on the shape coordinates
         for x_offset, y_offset in self.block_shapes[self.current_block_type]:
-            block_part = self.loader.loadModel("models/box")  # Replace with actual model path
+            block_part = self.loader.loadModel("Tetronimos/SingleCube.glb")  # Replace with actual model path
             part_pos = self.current_block_pos + Point3(x_offset, y_offset, 0)
             block_part.setPos(part_pos)
             block_part.reparentTo(self.render)
