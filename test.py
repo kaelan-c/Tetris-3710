@@ -244,7 +244,7 @@ class Tetris(ShowBase):
     def update_task(self, task):
         # Check if the block can move down
         can_move_down = all(self.is_position_valid(Point3(pos.x, pos.y, floor(pos.z - 0.01))) for pos, _ in self.current_block_parts)
-        print(self.score)
+        
         if can_move_down:
             # Automatically move the block down
             self.move_block(0, 0, -0.01)
