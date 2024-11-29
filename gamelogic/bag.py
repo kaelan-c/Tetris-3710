@@ -14,7 +14,7 @@ class Bag:
         pieces = []
         for p in piece_config:
             pieces.append(Tetromino(p['name'], p['shape'],
-                                    spawn, p['color'],
+                                    spawn, p['shape_string'],
                                     render_root, loader))
         return pieces
 

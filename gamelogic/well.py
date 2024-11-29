@@ -88,7 +88,7 @@ class Well:
     def place_piece(self, piece):
         for pos, cube in piece.model:
             self.grid[int(pos.x)][int(pos.y)][int(
-                pos.z)].fill_cell(piece.color, pos)
+                pos.z)].fill_cell(piece.shape_string, pos)
 
     def check_row(self):
         cleared_count = 0
@@ -98,7 +98,7 @@ class Well:
                    for y in range(self.depth)):
                 self.clear_row(z)
                 cleared_count += 1
-            if z == (self.render_height - 1):
+            if z >= (self.render_height):
                 for x in range(self.width):
                     for y in range(self.depth):
                         if not self.grid[x][y][z].is_empty():

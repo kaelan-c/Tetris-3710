@@ -6,12 +6,11 @@ class Cell:
         self.model = []
         self.empty = True
 
-    def fill_cell(self, color, pos):
-        cube = self.loader.loadModel("Tetronimos/SingleCube.glb")
+    def fill_cell(self, shape_string, pos):
+        cube = self.loader.loadModel(shape_string)
         cube.setPos(pos)
         self.empty = False
         cube.reparentTo(self.render_root)
-        cube.setColor(color)
         self.model = cube
 
     def empty_cell(self):

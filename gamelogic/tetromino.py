@@ -4,22 +4,21 @@ from panda3d.core import Point3
 
 
 class Tetromino:
-    def __init__(self, name, shape, spawn, color, render_root, loader):
+    def __init__(self, name, shape, spawn, shape_string, render_root, loader):
         self.name = name
         self.shape = shape
         self.position = Point3(spawn)
-        self.color = color
+        self.shape_string = shape_string
         self.loader = loader
         self.model = []
         self.render_root = render_root
 
     def render_piece(self):
         for x, y in self.shape:
-            cube = self.loader.loadModel("Tetronimos/SingleCube.glb")
+            cube = self.loader.loadModel(self.shape_string)
             pos = self.position + Point3(x, y, 0)
             cube.setPos(pos)
             cube.reparentTo(self.render_root)
-            cube.setColor(self.color)
 
             self.model.append((pos, cube))
 

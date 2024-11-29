@@ -156,6 +156,7 @@ class Tetris(ShowBase):
 
     def update_task(self, task):
         score_multiple = self.tetris_grid.check_row()
+        print(score_multiple)
         if score_multiple == -1:
             print("Game Over!")
             self.taskMgr.stop()
