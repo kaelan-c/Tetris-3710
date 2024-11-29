@@ -1,12 +1,6 @@
 import random
 from .constants import PIECES
 from .tetromino import Tetromino
-from .constants import PIECES
-from .tetromino import Tetromino
-
-from .constants import PIECES
-from .tetromino import Tetromino
-
 
 class Bag:
     def __init__(self):
