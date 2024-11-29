@@ -1,4 +1,3 @@
-from .tetromino import Tetromino
 from .well import Well
 from .bag import Bag
 
@@ -16,4 +15,3 @@ class Tetris:
     def holdPiece(self):
         self.piece_store = self.current_piece
         self.current_piece = self.bag.getNextPeice()
-
