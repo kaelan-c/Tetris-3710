@@ -1,27 +1,93 @@
 from math import ceil, cos, floor, radians, sin
 import random
+from direct.gui.DirectGui import DirectButton
+import random
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import LineSegs, NodePath, Vec3, LColor, Point3
+from panda3d.core import CardMaker
+from direct.showbase.ShowBase import ShowBase
+from panda3d.core import TextureStage
+
 
 class Tetris(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
-        self.block_speed = 0.01
-
-        self.count = 0
-
         self.score = 0 
-        self.score_text = OnscreenText(text=f'Score: {self.score}', pos=(-0.9, 0.9), scale=0.1, mayChange=True)
+        self.score_text = OnscreenText(text=f'Score: {self.score}', pos=(-0.9, 0.9), scale=0.1, fg=(1,1,1,1), mayChange=True)
+
+        self.is_game_running = False
+
+        # Create the start menu text
+        self.menu_text = OnscreenText(
+            text="Press Esc to Pause",
+            pos=(0, 0.3),
+            scale=0.1,
+            mayChange=True,
+            fg=(1,1,1,1)
+        )
+        
+        # Create the start game button (initially shown)
+        self.start_button = DirectButton(
+            text="Start Game",
+            scale=0.1,
+            pos=(0, 0, 0),
+            command=self.start_game
+        )
+
+        # Create the "Quit" button for the menu (optional)
+        self.quit_button = DirectButton(
+            text="Quit",
+            scale=0.1,
+            pos=(0, 0, -0.4),
+            command=self.quit_game
+        )
+
+        # Hide the menu buttons once game starts
+        self.start_button.show()
+
+        # Key bindings
+        self.accept('escape', self.toggle_menu)
+
+        # Start with the menu visible
+        self.show_menu()
+
+        # Load the skybox model
+        self.skybox = self.loader.loadModel("models/box")  # Empty model as a base for the skybox
+        self.skybox.reparentTo(self.render)
+        self.skybox.setTwoSided(True)  # Render textures on both sides
+
+
+        # Load the textures for each face of the skybox
+        self.front = self.loader.loadTexture("skybox/sky.jpg")
+        self.back = self.loader.loadTexture("skybox/sky.jpg")
+        self.left = self.loader.loadTexture("skybox/sky.jpg")
+        self.right = self.loader.loadTexture("skybox/sky.jpg")
+        self.up = self.loader.loadTexture("skybox/sky.jpg")
+        self.down = self.loader.loadTexture("skybox/sky.jpg")
+
+        # Apply the textures to the faces
+        self.skybox.setTexture(self.front, 0)  # front texture
+        self.skybox.setTexture(self.back, 1)   # back texture
+        self.skybox.setTexture(self.left, 2)   # left texture
+        self.skybox.setTexture(self.right, 3)  # right texture
+        self.skybox.setTexture(self.up, 4)     # up texture
+        self.skybox.setTexture(self.down, 5)   # down texture
+
+        # Scale and position the skybox
+        self.skybox.setScale(100)  # Set size
+        self.skybox.setPos(-50, -50, -50)  # Position in the center
+
+ 
+
 
         # Block Shapes
         self.block_shapes = {
             "line": [(0, 0), (1, 0), (2, 0)],  # 3x1 footprint
             "t_shape": [(0, 0), (1, 0), (2, 0), (1, 1)],  # T shape
-            "l_shape": [(0, 0), (0, 1), (0, 2)],  # L shape
-            "reverse_l": [(1, 0), (1, 1), (1, 2)],  # Reverse L shape
-            "s_shape": [(0, 0), (1, 0), (1, 1)],  # S shape
+            "cube": [(0, 0), (0,1), (1, 0), (1, 1)],  # S shape
+            "l_long": [(0, 0), (1, 0), (2, 0), (2, 1)],  # Z shape
             "z_shape": [(0, 0), (1, 0), (1, 1)],  # Z shape
         }
 
@@ -91,8 +157,8 @@ class Tetris(ShowBase):
     # Draw the 3D grid
     def draw_grid_outline(self):
         line_segs = LineSegs()
-        line_segs.setColor(LColor(0.5, 0.5, 0.5, 1.0))
-        line_segs.setThickness(0.5)
+        line_segs.setColor(LColor(0.6, 0.5, 0.6, 0.5))
+        line_segs.setThickness(1)
 
         for x in range(self.grid_width + 1):
             for y in range(self.grid_depth + 1):
@@ -120,16 +186,13 @@ class Tetris(ShowBase):
         self.current_block_type = random.choice(list(self.block_shapes.keys()))  # Choose random block type
         self.current_block_pos = Point3(1, 1, 9)  # Reset position to top of the grid
         self.current_block_parts = []  # Clear previous block parts
-        self.count += 1
-        if self.count % 10 == 0:
-            self.block_speed += 0.01
 
         # Generate a random color for the entire block
         block_color = self.random_color()
 
         # Create individual block parts based on the shape coordinates
         for x_offset, y_offset in self.block_shapes[self.current_block_type]:
-            block_part = self.loader.loadModel("models/box")  # Replace with actual model path
+            block_part = self.loader.loadModel("Tetronimos/SingleCube.glb")  # Replace with actual model path
             part_pos = self.current_block_pos + Point3(x_offset, y_offset, 0)
             block_part.setPos(part_pos)
             block_part.reparentTo(self.render)
@@ -150,9 +213,10 @@ class Tetris(ShowBase):
 
     # Checking if the position is valid for a specific movement, used in translation and rotations
     def is_position_valid(self, pos):
+        print(pos.z)
         if (pos.x < 0 or pos.x >= self.grid_width or
                 pos.y < 0 or pos.y >= self.grid_depth or
-                pos.z < 0 or pos.z >= self.grid_height):
+                pos.z < 1 or pos.z >= self.grid_height):
             return False
         
         if (pos.x, pos.y, pos.z) in self.block_positions:
@@ -248,13 +312,12 @@ class Tetris(ShowBase):
                 block_part.setPos(new_pos)
 
     # Main game loop, moving the block constantly, locking blocks
-    def update_task(self, task):
+    def update_task(self, task, ):
         # Check if the block can move down
-        can_move_down = all(self.is_position_valid(Point3(pos.x, pos.y, floor(pos.z - self.block_speed))) for pos, _ in self.current_block_parts)
-
+        can_move_down = all(self.is_position_valid(Point3(pos.x, pos.y, floor(pos.z - 0.01))) for pos, _ in self.current_block_parts)
         if can_move_down:
             # Automatically move the block down
-            self.move_block(0, 0, -self.block_speed)
+            self.move_block(0, 0, -0.01)
         else:
             # Lock the block in place if it can't move down anymore
             self.lock_block()
@@ -312,7 +375,7 @@ class Tetris(ShowBase):
                             block = self.block_positions.pop(pos)
                             # Calculate the new position by moving down to fill empty spaces
                             new_z = current_z - 1
-                            while (x, y, new_z) not in self.block_positions and new_z >= 0:
+                            while (x, y, new_z) not in self.block_positions and new_z >= 1:
                                 new_z -= 1
                             new_z += 1  # Move back to the first available position
                             self.block_positions[(x, y, new_z)] = block
@@ -333,7 +396,7 @@ class Tetris(ShowBase):
                             block = self.block_positions.pop(pos)
                             # Calculate the new position by moving down to fill empty spaces
                             new_z = current_z - 1
-                            while (x, y, new_z) not in self.block_positions and new_z >= 0:
+                            while (x, y, new_z) not in self.block_positions and new_z >= 1:
                                 new_z -= 1
                             new_z += 1  # Move back to the first available position
                             self.block_positions[(x, y, new_z)] = block
@@ -357,7 +420,6 @@ class Tetris(ShowBase):
 
     # Repsawn the block, debugging function not part of the game currently
     def respawn_block(self):
-        """Respawns the current block to the starting position."""
         self.current_block_parts.clear()  # Clear current parts
         self.spawn_new_block()  # Spawn a new block
 
@@ -365,6 +427,36 @@ class Tetris(ShowBase):
         self.score += 100
         self.score_text.setText(f'Score: {self.score}')
 
+    def show_menu(self):
+        self.menu_text.show()
+        self.start_button.show()
+        self.quit_button.show()
+
+    def hide_menu(self):
+        self.menu_text.hide()
+        self.start_button.hide()
+        self.quit_button.hide()
+
+    def start_game(self):
+        if not self.is_game_running:
+            self.is_game_running = True
+            self.score = 0  # Reset score
+            self.hide_menu()  # Hide the menu
+            self.taskMgr.add(self.update_task, "updateTask")  # Start the game loop
+
+    def toggle_menu(self):
+        """Toggle the menu visibility on pressing ESC."""
+        if self.is_game_running:
+            self.is_game_running = False
+            self.taskMgr.remove("updateTask")  # Stop game loop
+            self.show_menu()  # Show the menu with restart option
+        else:
+            self.start_game()  # Start the game again when ESC is pressed
+
+    def quit_game(self):
+        """Exit the game."""
+        self.userExit()
+    
 # Initialize the game 
 app = Tetris()
 app.run()

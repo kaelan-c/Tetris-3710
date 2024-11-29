@@ -178,6 +178,7 @@ class Tetris(ShowBase):
 
     # Checking if the position is valid for a specific movement, used in translation and rotations
     def is_position_valid(self, pos):
+        print(pos.z)
         if (pos.x < 0 or pos.x >= self.grid_width or
                 pos.y < 0 or pos.y >= self.grid_depth or
                 pos.z < 0 or pos.z >= self.grid_height):
@@ -276,10 +277,9 @@ class Tetris(ShowBase):
                 block_part.setPos(new_pos)
 
     # Main game loop, moving the block constantly, locking blocks
-    def update_task(self, task):
+    def update_task(self, task, ):
         # Check if the block can move down
         can_move_down = all(self.is_position_valid(Point3(pos.x, pos.y, floor(pos.z - 0.01))) for pos, _ in self.current_block_parts)
-        print(self.score)
         if can_move_down:
             # Automatically move the block down
             self.move_block(0, 0, -0.01)
