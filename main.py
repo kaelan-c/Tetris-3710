@@ -5,6 +5,10 @@ import random
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import LineSegs, NodePath, Vec3, LColor, Point3
+from panda3d.core import CardMaker
+from direct.showbase.ShowBase import ShowBase
+from panda3d.core import TextureStage
+
 
 class Tetris(ShowBase):
     def __init__(self):
@@ -12,6 +16,35 @@ class Tetris(ShowBase):
 
         self.score = 0 
         self.score_text = OnscreenText(text=f'Score: {self.score}', pos=(-0.9, 0.9), scale=0.1, mayChange=True)
+
+         # Load the skybox model
+        self.skybox = self.loader.loadModel("models/box")  # Empty model as a base for the skybox
+        self.skybox.reparentTo(self.render)
+        self.skybox.setTwoSided(True)  # Render textures on both sides
+
+
+        # Load the textures for each face of the skybox
+        self.front = self.loader.loadTexture("skybox/sky.jpg")
+        self.back = self.loader.loadTexture("skybox/sky.jpg")
+        self.left = self.loader.loadTexture("skybox/sky.jpg")
+        self.right = self.loader.loadTexture("skybox/sky.jpg")
+        self.up = self.loader.loadTexture("skybox/sky.jpg")
+        self.down = self.loader.loadTexture("skybox/sky.jpg")
+
+        # Apply the textures to the faces
+        self.skybox.setTexture(self.front, 0)  # front texture
+        self.skybox.setTexture(self.back, 1)   # back texture
+        self.skybox.setTexture(self.left, 2)   # left texture
+        self.skybox.setTexture(self.right, 3)  # right texture
+        self.skybox.setTexture(self.up, 4)     # up texture
+        self.skybox.setTexture(self.down, 5)   # down texture
+
+        # Scale and position the skybox
+        self.skybox.setScale(100)  # Set size
+        self.skybox.setPos(-50, -50, -50)  # Position in the center
+
+ 
+
 
         # Block Shapes
         self.block_shapes = {
