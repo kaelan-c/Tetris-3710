@@ -1,32 +1,32 @@
 import random
-from .constants import PIECES
-from .tetromino import Tetromino
-from .constants import PIECES
-from .tetromino import Tetromino
-
-from .constants import PIECES
 from .tetromino import Tetromino
 
 
 class Bag:
-    def __init__(self):
-        self.pieces = self.genPieces()
-        self.bag = self.fillBag()
+    def __init__(self, piece_config, spawn, render_root, loader):
+        self.piece_config = piece_config
+        self.spawn = spawn
+        self.render_root = render_root
+        self.loader = loader
+        self.bag = self.fill_bag()
 
-    def genPieces(self):
+    def gen_pieces(self, piece_config, spawn, render_root, loader):
         pieces = []
-        for p_key, p in PIECES.items():
-            pieces.append(Tetromino(p.get("name"), p.get("shape2d"),
-                                    p.get("offset"), p.get("colour")))
+        for p in piece_config:
+            pieces.append(Tetromino(p['name'], p['shape'],
+                                    spawn, p['color'],
+                                    render_root, loader))
         return pieces
 
-    def fillBag(self):
-        return random.sample(self.pieces, len(self.pieces))
+    def fill_bag(self):
+        pieces = self.gen_pieces(
+            self.piece_config, self.spawn, self.render_root, self.loader)
+        return random.sample(pieces, len(pieces))
 
-    def viewNextPeice(self):
+    def view_next_peice(self):
         return self.bag[-1]if self.bag else None
 
-    def getNextPiece(self):
-        if not self.bag:
-            self.fillBag()
+    def pop_next_piece(self):
+        if len(self.bag) == 0:
+            self.bag = self.fill_bag()
         return self.bag.pop()
