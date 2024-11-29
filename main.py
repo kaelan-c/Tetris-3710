@@ -1,13 +1,13 @@
 from math import ceil, cos, floor, radians, sin
 import random
-from math import ceil, cos, floor, radians, sin
-import random
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import LineSegs, NodePath, Vec3, LColor, Point3
 from panda3d.core import CardMaker
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import TextureStage
+
+from gamelogic.well import Well
 
 
 class Tetris(ShowBase):
@@ -21,6 +21,8 @@ class Tetris(ShowBase):
         self.skybox = self.loader.loadModel("models/box")  # Empty model as a base for the skybox
         self.skybox.reparentTo(self.render)
         self.skybox.setTwoSided(True)  # Render textures on both sides
+
+        self.render_root = self.rendr
 
 
         # Load the textures for each face of the skybox
@@ -80,6 +82,8 @@ class Tetris(ShowBase):
         # Initialize dictionary to track occupied positions
         self.block_positions = {}
 
+        self.tetris_grid = Well(self.render_root, self.grid_height, self.grid_width, self.grid_depth)
+
         # Current block variables
         self.current_block_parts = []  # Track individual block parts
         self.current_block_type = None
@@ -98,9 +102,6 @@ class Tetris(ShowBase):
         self.accept("space", self.drop_block)  # Drop block faster
         # self.accept("r", self.respawn_block)  # Respawn block when 'R' is pressed, 
 
-        # Draw the grid outline
-        self.draw_grid_outline()
-
         # Create the initial block
         self.spawn_new_block()
 
@@ -118,30 +119,6 @@ class Tetris(ShowBase):
         """Switches to the specified camera view."""
         self.current_view = view_index
         self.set_camera_view(self.current_view)
-
-    # Draw the 3D grid
-    def draw_grid_outline(self):
-        line_segs = LineSegs()
-        line_segs.setColor(LColor(0.6, 0.5, 0.6, 0.5))
-        line_segs.setThickness(1)
-
-        for x in range(self.grid_width + 1):
-            for y in range(self.grid_depth + 1):
-                start = Vec3(x * self.grid_size, y * self.grid_size, 0)
-                end = Vec3(x * self.grid_size, y * self.grid_size, self.grid_height * self.grid_size)
-                line_segs.moveTo(start)
-                line_segs.drawTo(end)
-
-        for z in range(self.grid_height + 1):
-            for x in range(self.grid_width + 1):
-                line_segs.moveTo(Vec3(x * self.grid_size, 0, z * self.grid_size))
-                line_segs.drawTo(Vec3(x * self.grid_size, self.grid_depth * self.grid_size, z * self.grid_size))
-            for y in range(self.grid_depth + 1):
-                line_segs.moveTo(Vec3(0, y * self.grid_size, z * self.grid_size))
-                line_segs.drawTo(Vec3(self.grid_width * self.grid_size, y * self.grid_size, z * self.grid_size))
-
-        grid_np = NodePath(line_segs.create())
-        grid_np.reparentTo(self.render)
 
     def random_color(self):
             return (random.random(), random.random(), random.random(), 1)  # Random RGBA values
