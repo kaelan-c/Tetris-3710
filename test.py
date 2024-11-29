@@ -8,6 +8,10 @@ class Tetris(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
 
+        self.block_speed = 0.01
+
+        self.count = 0
+
         self.score = 0 
         self.score_text = OnscreenText(text=f'Score: {self.score}', pos=(-0.9, 0.9), scale=0.1, mayChange=True)
 
@@ -87,8 +91,8 @@ class Tetris(ShowBase):
     # Draw the 3D grid
     def draw_grid_outline(self):
         line_segs = LineSegs()
-        line_segs.setColor(LColor(0.6, 0.5, 0.6, 0.5))
-        line_segs.setThickness(1)
+        line_segs.setColor(LColor(0.5, 0.5, 0.5, 1.0))
+        line_segs.setThickness(0.5)
 
         for x in range(self.grid_width + 1):
             for y in range(self.grid_depth + 1):
@@ -116,6 +120,9 @@ class Tetris(ShowBase):
         self.current_block_type = random.choice(list(self.block_shapes.keys()))  # Choose random block type
         self.current_block_pos = Point3(1, 1, 9)  # Reset position to top of the grid
         self.current_block_parts = []  # Clear previous block parts
+        self.count += 1
+        if self.count % 10 == 0:
+            self.block_speed += 0.01
 
         # Generate a random color for the entire block
         block_color = self.random_color()
@@ -243,11 +250,11 @@ class Tetris(ShowBase):
     # Main game loop, moving the block constantly, locking blocks
     def update_task(self, task):
         # Check if the block can move down
-        can_move_down = all(self.is_position_valid(Point3(pos.x, pos.y, floor(pos.z - 0.01))) for pos, _ in self.current_block_parts)
-        
+        can_move_down = all(self.is_position_valid(Point3(pos.x, pos.y, floor(pos.z - self.block_speed))) for pos, _ in self.current_block_parts)
+
         if can_move_down:
             # Automatically move the block down
-            self.move_block(0, 0, -0.01)
+            self.move_block(0, 0, -self.block_speed)
         else:
             # Lock the block in place if it can't move down anymore
             self.lock_block()
