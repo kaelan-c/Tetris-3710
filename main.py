@@ -92,9 +92,11 @@ class Tetris(ShowBase):
         self.disableMouse()
         # maybe add more camera presets
         self.camera_positions = [
-            (Point3(2.5, -40, 6), Point3(2.5, 100, 6)),  # Front view
-            (Point3(-20, -20, 35), Point3(2.5, 2.5, 3)),
-            (Point3(2.5, 2.5, 35), Point3(2.5, 2.5, 0)),  # Top view
+            (Point3(-15, -15, 21), Point3(2.5, 2.5, 6)),
+            (Point3(20, 20, 21), Point3(2.5, 2.5, 6)),
+            (Point3(20, -15, 21), Point3(2.5, 2.5, 6)),
+            (Point3(-15, 20, 21), Point3(2.5, 2.5, 6)),
+            (Point3(2.5, 2.5, 25), Point3(2.5, 2.5, 6)),  # Top view
         ]
 
         self.current_view = 0
@@ -104,6 +106,8 @@ class Tetris(ShowBase):
         self.accept("1", self.switch_to_view, [0])
         self.accept("2", self.switch_to_view, [1])
         self.accept("3", self.switch_to_view, [2])
+        self.accept("4", self.switch_to_view, [3])
+        self.accept("5", self.switch_to_view, [4])
 
 
 # ******************************** Movement / KeyBinds
