@@ -92,13 +92,13 @@ class Well:
 
     def check_row(self):
         cleared_count = 0
-        for z in range(self.render_height - 1):
+        for z in range(self.render_height):
             if all(not self.grid[x][y][z].is_empty()
                    for x in range(self.width)
                    for y in range(self.depth)):
                 self.clear_row(z)
                 cleared_count += 1
-            if z >= (self.render_height):
+            if z >= (self.render_height - 1):
                 for x in range(self.width):
                     for y in range(self.depth):
                         if not self.grid[x][y][z].is_empty():
