@@ -154,7 +154,7 @@ class Tetris(ShowBase):
         self.set_camera_view(self.current_view)
 
     def auto_drop_piece(self, task):
-        if self.count % 10 == 0:
+        if self.count % 10 == 0 and self.count < 500:
             self.drop_speed -= 0.01
             self.update_drop_speed(self.drop_speed)
         self.count += 1
