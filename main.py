@@ -81,7 +81,7 @@ class Tetris(ShowBase):
 # ***** Score Board Logic ******
         self.score = 0
         self.score_text = OnscreenText(
-            text=f'Score: {self.score}', pos=(-0.9, 0.9), scale=0.1, mayChange=True)
+            text=f'Score: {self.score}', pos=(-0.9, 0.9), scale=0.1, fg=(1,1,1,1), mayChange=True)
 
 # ****************** Camera Definitions
 
