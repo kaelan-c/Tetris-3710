@@ -26,13 +26,31 @@ class Well:
         line_segs.setThickness(0.1)
 
         for x in range(self.width + 1):
-            for y in range(self.depth + 1):
-                if y == 0 or y == self.depth:
-                    if x == 0 or x == self.width:
-                        start = Vec3(x, y, 0)
-                        end = Vec3(x, y, self.render_height)
-                        line_segs.moveTo(start)
-                        line_segs.drawTo(end)
+            start = Vec3(x, self.depth, 0)
+            end = Vec3(x, self.depth, self.render_height)
+            line_segs.moveTo(start)
+            line_segs.drawTo(end)
+        
+        for y in range(self.depth + 1):
+            start = Vec3(self.width, y, 0)
+            end = Vec3(self.width, y, self.render_height)
+            line_segs.moveTo(start)
+            line_segs.drawTo(end)
+
+        for z in range(self.render_height + 1):
+            start = Vec3(self.width, 0, z)
+            end = Vec3(self.width, self.depth, z)
+
+            line_segs.moveTo(start)
+            line_segs.drawTo(end)
+
+            start = Vec3(0, self.depth, z)
+            end = Vec3(self.width, self.depth, z)
+
+            line_segs.moveTo(start)
+            line_segs.drawTo(end)
+
+
 
         for z in range(self.render_height + 1):
             for x in range(self.width + 1):
@@ -44,10 +62,10 @@ class Well:
                     line_segs.moveTo(Vec3(0, y, z))
                     line_segs.drawTo(Vec3(self.width, y, z))
 
-        start = Vec3(0, 0, self.render_height)
-        end = Vec3(self.width, 0, self.render_height)
-        line_segs.moveTo(start)
-        line_segs.drawTo(end)
+        #start = Vec3(0, 0, self.render_height)
+        #end = Vec3(self.width, 0, self.render_height)
+        #line_segs.moveTo(start)
+        #line_segs.drawTo(end)
 
         start = Vec3(0, self.depth, self.render_height)
         end = Vec3(self.width, self.depth, self.render_height)
@@ -55,11 +73,11 @@ class Well:
         line_segs.moveTo(start)
         line_segs.drawTo(end)
 
-        start = Vec3(0, 0, self.render_height)
-        end = Vec3(0, self.depth, self.render_height)
+        #start = Vec3(0, 0, self.render_height)
+        #end = Vec3(0, self.depth, self.render_height)
 
-        line_segs.moveTo(start)
-        line_segs.drawTo(end)
+        #line_segs.moveTo(start)
+        #line_segs.drawTo(end)
 
         start = Vec3(self.width, 0, self.render_height)
         end = Vec3(self.width, self.depth, self.render_height)
