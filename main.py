@@ -93,7 +93,7 @@ class Tetris(ShowBase):
         # maybe add more camera presets
         self.camera_positions = [
             (Point3(2.5, -40, 6), Point3(2.5, 100, 6)),  # Front view
-            (Point3(-20, -20, 35), Point3(2.5, 2.5, 0)),
+            (Point3(-20, -20, 35), Point3(2.5, 2.5, 3)),
             (Point3(2.5, 2.5, 35), Point3(2.5, 2.5, 0)),  # Top view
         ]
 
