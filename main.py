@@ -19,6 +19,9 @@ class Tetris(ShowBase):
         self.pieces = PIECES.values()
         self.spawn = SPAWN
 
+        self.drop_speed = 1.0
+        self.count = 11
+
 # ******** Setup Bag
         # Works!
         self.piece_bag = Bag(self.pieces, self.spawn, self.render, self.loader)
@@ -47,7 +50,7 @@ class Tetris(ShowBase):
         # Task to update game logic and block movement
         # THIS IS THE MAIN GAMELOOP
         self.taskMgr.add(self.update_task, "updateTask")
-        self.taskMgr.doMethodLater(1.0, self.auto_drop_piece, "dropPiece")
+        self.taskMgr.doMethodLater(self.drop_speed, self.auto_drop_piece, "dropPiece")
 
 
 # ************ Sky Box Definition
@@ -141,6 +144,11 @@ class Tetris(ShowBase):
         self.set_camera_view(self.current_view)
 
     def auto_drop_piece(self, task):
+        if self.count % 10 == 0:
+            self.drop_speed -= 0.01
+            self.update_drop_speed(self.drop_speed)
+        self.count += 1
+
         next_drop_pos = self.current_piece.move_piece(0, 0, -1)
         if self.tetris_grid.validate_position(next_drop_pos):
             self.current_piece.set_position(next_drop_pos)
@@ -153,10 +161,13 @@ class Tetris(ShowBase):
         return task.again
 
     # Main game loop, moving the block constantly, locking blocks
-
+    def update_drop_speed(self, new_speed):
+        self.taskMgr.remove("dropPiece")  # Remove the old task
+        self.taskMgr.doMethodLater(new_speed, self.auto_drop_piece, "dropPiece")
+        
     def update_task(self, task):
         score_multiple = self.tetris_grid.check_row()
-        print(score_multiple)
+        print(self.drop_speed)
         if score_multiple == -1:
             print("Game Over!")
             self.taskMgr.stop()
