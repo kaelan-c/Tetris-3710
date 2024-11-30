@@ -114,6 +114,7 @@ class Tetris(ShowBase):
         self.accept("q", self.rotate_piece, ['x'])  # Rotate on X
         self.accept("w", self.rotate_piece, ['y'])  # Rotate on Y
         self.accept("e", self.rotate_piece, ['z'])  # Rotate on Z
+        self.accept("d", self.full_drop, [])
         self.accept("space", self.move_piece, [0, 0, -1])  # Drop block faster
 
         # ******* render bag from peice
@@ -123,6 +124,8 @@ class Tetris(ShowBase):
         new_pos = self.current_piece.move_piece(x, y, z)
         if self.tetris_grid.validate_position(new_pos):
             self.current_piece.set_position(new_pos)
+            return True
+        return False
 
     def rotate_piece(self, dir):
         if dir == 'x':
@@ -133,6 +136,11 @@ class Tetris(ShowBase):
             new_pos = self.current_piece.rotate_z()
         if self.tetris_grid.validate_position(new_pos):
             self.current_piece.set_position(new_pos)
+
+    def full_drop(self):
+        can_move = self.move_piece(0, 0, -1)
+        while can_move:
+            can_move = self.move_piece(0, 0, -1)
 
     def set_camera_view(self, view_index):
         position, look_at = self.camera_positions[view_index]
