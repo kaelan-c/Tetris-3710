@@ -93,6 +93,7 @@ class Tetris(ShowBase):
         # maybe add more camera presets
         self.camera_positions = [
             (Point3(2.5, -40, 6), Point3(2.5, 100, 6)),  # Front view
+            (Point3(-20, -20, 35), Point3(2.5, 2.5, 0)),
             (Point3(2.5, 2.5, 35), Point3(2.5, 2.5, 0)),  # Top view
         ]
 
@@ -102,6 +103,7 @@ class Tetris(ShowBase):
         # Bind keys to switch scenes
         self.accept("1", self.switch_to_view, [0])
         self.accept("2", self.switch_to_view, [1])
+        self.accept("3", self.switch_to_view, [2])
 
 
 # ******************************** Movement / KeyBinds
