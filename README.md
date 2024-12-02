@@ -1,32 +1,25 @@
 # Tetris-3710
-    Repository for CPSC 3710 Term Project
+
+    Repository for CPSC 3710 Term Project by:
+    - Ethan Fisher
+    - Patrick Bulbrook
+    - Kaelan Croucher
 
 # Requirements:
+
     - Panda3D
+        - install with "pip install panda3d"
 
-# TODO:
-    - Finish game logic implementation
-    - Make/Find 3D models for game
-    - Build control and menu logic
-    - TBD
+# How to run:
 
-# Resources:
-    - Tetris:
-        - Rotation System: https://tetris.fandom.com/wiki/SRS
-        - Tetromino: https://tetris.fandom.com/wiki/Tetromino
-        - Random Piece Algorithm: https://tetris.fandom.com/wiki/Random_Generator
-        - Scoring System: https://tetris.fandom.com/wiki/Scoring
-
-    - Panda3D:
-        - Official Docs: https://docs.panda3d.org/1.10/python/index
-        - Basic Tutorial: https://arsthaumaturgis.github.io/Panda3DTutorial.io/tutorial/prologue.html
-        - Video Tutorial Playlist: https://www.youtube.com/watch?v=LNMz52Pkl_U&list=PL1P11yPQAo7oEAGuPcqMnn9ZWHLWP3-Lc
-        - Panda3D game dev book: https://github.com/fireclawthefox/panda3d-tutorial
+    - run with "python3 main.py"
 
 # Controls:
-    - Arrow keys to move the block
+
+    - Arrow keys to move the piece
     - Q to rotate on the X-axis
     - W to rotate on the Y-axis
     - E to rotate on the Z-axis
-    - SPACE to move the block down
+    - D to "hard drop" piece
+    - SPACE to move the piece down
     - 1, 2 to change the camera angle

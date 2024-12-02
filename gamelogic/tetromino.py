@@ -1,62 +1,69 @@
-# *** CPSC 3710 - Term Project
-# *** Team Kernel Panic Attak:
-# *** Ethan Fisher,Patrick Bulbrook,
-# *** Kaelan Croucher
+# *** CPSC 3710 - Term Project - Fall 2024
+# *** Team Kernel Panic Attak - 3d Tetris:
+# ***  - Ethan Fisher
+# ***  - Patrick Bulbrook
+# ***  - Kaelan Croucher
+
 from math import cos, sin, radians
 from panda3d.core import Point3
+from .cell import Cell
 
 
+# Tetromino Class responsible for containing 3d model,
+# piece position and piece transformations.
 class Tetromino:
-    def __init__(self, name, shape, spawn, shape_string, render_root, loader):
+    def __init__(self, name, shape, origin, model):
         self.name = name
         self.shape = shape
-        self.position = Point3(spawn)
-        self.shape_string = shape_string
-        self.loader = loader
-        self.model = []
-        self.render_root = render_root
+        self.origin = Point3(origin)
+        self.model = model
+        self.cells = []
 
-    def render_piece(self):
+        # Pre calc cos of 90 degrees for on grid rotation
+        self.cos = cos(radians(90))
+        self.sin = sin(radians(90))
+
+    # Render Piece is responsible for rendering each cell in the piece in the
+    # correct position.
+    def render_piece(self, render):
+        # For each cell in the peice, fill a cell with model, and spawn pos
         for x, y in self.shape:
-            cube = self.loader.loadModel(self.shape_string)
-            pos = self.position + Point3(x, y, 0)
-            cube.setPos(pos)
-            cube.reparentTo(self.render_root)
+            pos = self.origin + Point3(x, y, 0)
+            cell = Cell(pos)
+            cell.fill_cell(self.model, render)
+            self.cells.append(cell)
 
-            self.model.append((pos, cube))
-
+    # Rotate X rotates the piece 90 degrees around the X axis
     def rotate_x(self):
-        angle = 90
         anchor = self.get_rotation_anchor()
         new_position = []
-        cos_angle = cos(radians(angle))
-        sin_angle = sin(radians(angle))
+        # Rotate each cell in cells[] around by 90 degrees around anchor
+        for cell in self.cells:
+            pos = cell.get_pos()
 
-        for pos, cube in self.model:
             rot_pos = Point3(
                 pos.x - anchor.x, pos.y - anchor.y, pos.z - anchor.z)
 
-            new_y = (rot_pos.y * cos_angle) - (rot_pos.z * sin_angle)
-            new_z = (rot_pos.y * sin_angle) + (rot_pos.z * cos_angle)
+            new_y = (rot_pos.y * self.cos) - (rot_pos.z * self.sin)
+            new_z = (rot_pos.y * self.sin) + (rot_pos.z * self.cos)
             new_pos = Point3(rot_pos.x + anchor.x,
                              new_y + anchor.y, new_z + anchor.z)
             new_position.append(new_pos)
 
         return new_position
 
+    # Rotate Y rotates the piece 90 degrees around the Y axis.
     def rotate_y(self):
-        angle = 90
         anchor = self.get_rotation_anchor()
         new_position = []
-        cos_angle = cos(radians(angle))
-        sin_angle = sin(radians(angle))
-
-        for pos, cube in self.model:
+        # Rotate each cell in cells[] around by 90 degrees around anchor
+        for cell in self.cells:
+            pos = cell.get_pos()
             rot_pos = Point3(
                 pos.x - anchor.x, pos.y - anchor.y, pos.z - anchor.z)
             # Perform the rotation around the Y axis
-            new_x = (rot_pos.x * cos_angle) + (rot_pos.z * sin_angle)
-            new_z = (-rot_pos.x * sin_angle) + (rot_pos.z * cos_angle)
+            new_x = (rot_pos.x * self.cos) + (rot_pos.z * self.sin)
+            new_z = (-rot_pos.x * self.sin) + (rot_pos.z * self.cos)
 
             # Translate back to the original anchor
             new_pos = Point3(new_x + anchor.x,
@@ -64,21 +71,20 @@ class Tetromino:
             new_position.append(new_pos)
         return new_position
 
+    # Rotate Z rotates the piece 90 degrees around the Y axis
     def rotate_z(self):
-        angle = 90
         anchor = self.get_rotation_anchor()
         new_position = []
-        cos_angle = cos(radians(angle))
-        sin_angle = sin(radians(angle))
-
-        for pos, cube in self.model:
+        # Rotate each cell in cells[] around by 90 degrees around anchor
+        for cell in self.cells:
+            pos = cell.get_pos()
             # Translate to the anchor
             rot_pos = Point3(
                 pos.x - anchor.x, pos.y - anchor.y, pos.z - anchor.z)
 
             # Perform the rotation around the Z axis
-            new_x = (rot_pos.x * cos_angle) - (rot_pos.y * sin_angle)
-            new_y = (rot_pos.x * sin_angle) + (rot_pos.y * cos_angle)
+            new_x = (rot_pos.x * self.cos) - (rot_pos.y * self.sin)
+            new_y = (rot_pos.x * self.sin) + (rot_pos.y * self.cos)
 
             # Translate back to the original anchor
             new_pos = Point3(new_x + anchor.x, new_y +
@@ -87,32 +93,30 @@ class Tetromino:
 
         return new_position
 
+    # Move Piece translates the piece on a 3d grid by passed amount for x, y, z
     def move_piece(self, x, y, z):
         # Check new positions against the grid bounds and block positions
         new_position = []
-        for pos, _ in self.model:
+        # Translate each sell by specified amount
+        for cell in self.cells:
+            pos = cell.get_pos()
             new_position.append(Point3(pos.x + x, pos.y + y, pos.z + z))
 
         return new_position
 
+    # Set position updates the pieces position with passed position.
+    # this is done to allow for grid validation of new_position arrays
+    # returned from transformation functions.
     def set_position(self, new_pos):
-        for i, (pos, cube) in enumerate(self.model):
-            cube.setPos(new_pos[i])
-            self.model[i] = (new_pos[i], cube)
+        for i, cell in enumerate(self.cells):
+            cell.set_pos(new_pos[i])
 
+    # This iterates through a the piece's model list, and removes the model
+    # being rendered at each position
     def remove_piece(self):
-        for pos, cube in self.model:
-            cube.removeNode()
+        for cell in self.cells:
+            cell.empty_cell()
 
-    def drop_peice(self):
-        print("drop ")
-
-    def get_shape(self):
-        print(self.name)
-        return self.shape
-
-    def get_coords(self):
-        return self.position
-
+    # Rotation anchor returns the point or rotation for each piece
     def get_rotation_anchor(self):
-        return self.model[1][0]
+        return self.cells[1].get_pos()

@@ -1,98 +1,65 @@
-from panda3d.core import LineSegs, NodePath, Vec3
+# *** CPSC 3710 - Term Project - Fall 2024
+# *** Team Kernel Panic Attak - 3d Tetris:
+# ***  - Ethan Fisher
+# ***  - Patrick Bulbrook
+# ***  - Kaelan Croucher
 
+from panda3d.core import LineSegs, NodePath, Vec3
 from .cell import Cell
 
 
+# The grid class is responsible for maintaining a grid of cells
+# and checking for cleared lines or game over states
 class Grid:
-    def __init__(self, render_root, loader, width, depth, height):
-        self.render_root = render_root
-        self.loader = loader
+    def __init__(self, width, depth, height):
         self.height = height
+        # Render height allows for 3 blocks above the grid for spawn
+        # and initial rotation purposes
         self.render_height = height - 3
         self.width = width
         self.depth = depth
-        self.grid = [
-            [[None for z in range(self.height)] for y in range(self.depth)]
-            for x in range(self.width)
-        ]
-        self.generate_grid()
+        # Fill grid with empty cells according to dimension
+        self.grid = [[[Cell((x, y, z)) for z in range(self.height)]
+                      for y in range(self.depth)]
+                     for x in range(self.width)]
 
-        self.grid_node = self.draw_grid()
-        self.grid_node.reparentTo(self.render_root)
-
-    # This function draws a semi transparent grid to screen as a player guide.
-    def draw_grid(self):
+    # Draw grid renders a white grid to the screen
+    def render_grid(self, render):
         # Define line colour, transparency and thickness
         line_segs = LineSegs()
         line_segs.setColor(0.5, 0.5, 0.5, 0.5)
         line_segs.setThickness(0.1)
 
         for x in range(self.width + 1):
-            start = Vec3(x, self.depth, 0)
-            end = Vec3(x, self.depth, self.render_height)
-            line_segs.moveTo(start)
-            line_segs.drawTo(end)
+            # Draw vertical along x axis of grid
+            line_segs.moveTo(Vec3(x, self.depth, 0))
+            line_segs.drawTo(Vec3(x, self.depth, self.render_height))
+            # Draw bottom grid lines along x axis
+            line_segs.moveTo(Vec3(x, 0, 0))
+            line_segs.drawTo(Vec3(x, self.depth, 0))
 
         for y in range(self.depth + 1):
-            start = Vec3(self.width, y, 0)
-            end = Vec3(self.width, y, self.render_height)
-            line_segs.moveTo(start)
-            line_segs.drawTo(end)
+            # Draw vertical lines along y axis
+            line_segs.moveTo(Vec3(self.width, y, 0))
+            line_segs.drawTo(Vec3(self.width, y, self.render_height))
+            # Draw bottom grid lines along y axis
+            line_segs.moveTo(Vec3(0, y, 0))
+            line_segs.drawTo(Vec3(self.width, y, 0))
 
+        # Draw horizontal lines along x and y axis
         for z in range(self.render_height + 1):
-            start = Vec3(self.width, 0, z)
-            end = Vec3(self.width, self.depth, z)
+            # Draw along y axis
+            line_segs.moveTo(Vec3(self.width, 0, z))
+            line_segs.drawTo(Vec3(self.width, self.depth, z))
+            # Draw along x axis
+            line_segs.moveTo(Vec3(0, self.depth, z))
+            line_segs.drawTo(Vec3(self.width, self.depth, z))
 
-            line_segs.moveTo(start)
-            line_segs.drawTo(end)
+        # render the grid lines
+        NodePath(line_segs.create()).reparentTo(render)
 
-            start = Vec3(0, self.depth, z)
-            end = Vec3(self.width, self.depth, z)
-
-            line_segs.moveTo(start)
-            line_segs.drawTo(end)
-
-        for z in range(self.render_height + 1):
-            for x in range(self.width + 1):
-                if z == 0:
-                    line_segs.moveTo(Vec3(x, 0, z))
-                    line_segs.drawTo(Vec3(x, self.depth, z))
-            for y in range(self.depth + 1):
-                if z == 0:
-                    line_segs.moveTo(Vec3(0, y, z))
-                    line_segs.drawTo(Vec3(self.width, y, z))
-
-        # start = Vec3(0, 0, self.render_height)
-        # end = Vec3(self.width, 0, self.render_height)
-        # line_segs.moveTo(start)
-        # line_segs.drawTo(end)
-
-        start = Vec3(0, self.depth, self.render_height)
-        end = Vec3(self.width, self.depth, self.render_height)
-
-        line_segs.moveTo(start)
-        line_segs.drawTo(end)
-
-        # start = Vec3(0, 0, self.render_height)
-        # end = Vec3(0, self.depth, self.render_height)
-
-        # line_segs.moveTo(start)
-        # line_segs.drawTo(end)
-
-        start = Vec3(self.width, 0, self.render_height)
-        end = Vec3(self.width, self.depth, self.render_height)
-
-        line_segs.moveTo(start)
-        line_segs.drawTo(end)
-
-        return NodePath(line_segs.create())
-
-    def generate_grid(self):
-        for z in range(self.height):
-            for y in range(self.depth):
-                for x in range(self.width):
-                    self.grid[x][y][z] = Cell(self.render_root, self.loader)
-
+    # Validates a passed position does not occupy any filled cells
+    # or any position falls outside the allowable playing field
     def validate_position(self, new_pos):
         for pos in new_pos:
             if (
@@ -108,42 +75,57 @@ class Grid:
                 return False
         return True
 
-    def place_piece(self, piece):
-        for pos, cube in piece.model:
+    # Takes a peice and converts it to cells on the grid
+    def place_piece(self, piece, render):
+        # For each cell in piece, fill a grid cell with the same model
+        for cell in piece.cells:
+            pos = cell.get_pos()
             self.grid[int(pos.x)][int(pos.y)][int(pos.z)].fill_cell(
-                piece.shape_string, pos
+                piece.model, render
             )
 
-    def check_row(self):
+    # Checks each layer of the grid clearing full rows, and returning total
+    # number of full rows.
+    def check_row(self, render):
         cleared_count = 0
+        # Iterate through grid, layer by layer.
         for z in range(self.render_height):
+            # If every cell is filled, clear line
             if all(
                 not self.grid[x][y][z].is_empty()
                 for x in range(self.width)
                 for y in range(self.depth)
             ):
-                self.clear_row(z)
+                self.clear_row(z, render)
                 cleared_count += 1
+            # if there is a block filled at render height, game over
             if z >= (self.render_height - 1):
                 for x in range(self.width):
                     for y in range(self.depth):
                         if not self.grid[x][y][z].is_empty():
-                            return -1
+                            cleared_count = -1
+        # Return number of rows cleared or -1 for game over
         return cleared_count
 
-    def clear_row(self, z):
+    # Clears the row at the passed z value, calls shift down to correct the
+    # grid.
+    def clear_row(self, z, render):
+        # Iterate through layer and clear all the cells, call shift down
+        # to move all pieces above layer down one block
         for x in range(self.width):
             for y in range(self.depth):
                 self.grid[x][y][z].empty_cell()
-        self.shift_down(z)
+        self.shift_down(z, render)
 
-    def shift_down(self, cleared):
-        for z in range(cleared, self.height):
+    # Shifts each cell of the grid after the specified cleared row.
+    def shift_down(self, cleared, render):
+        # Iterate through grid from cleared row to render height -1
+        for z in range(cleared, self.render_height - 1):
             for x in range(self.width):
                 for y in range(self.depth):
-                    if (z + 1) < self.render_height:
-                        if not self.grid[x][y][z+1].is_empty():
-                            self.grid[x][y][z + 1].set_pos((x, y, z))
-                            self.grid[x][y][z] = self.grid[x][y][z + 1]
-                            self.grid[x][y][z+1].empty = True
-                            self.grid[x][y][z].empty = False
+                    # If a the cell above current iterator is not empty
+                    if not self.grid[x][y][z + 1].is_empty():
+                        # Fill current cell with cell above, empty cell above
+                        model = self.grid[x][y][z + 1].model
+                        self.grid[x][y][z].fill_cell(model, render)
+                        self.grid[x][y][z + 1].empty_cell()
