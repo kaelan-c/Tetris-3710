@@ -1,4 +1,7 @@
-#  TODO: Need to implement logic for 2d rotate, according to srs
+# *** CPSC 3710 - Term Project
+# *** Team Kernel Panic Attak:
+# *** Ethan Fisher,Patrick Bulbrook,
+# *** Kaelan Croucher
 from math import cos, sin, radians
 from panda3d.core import Point3
 

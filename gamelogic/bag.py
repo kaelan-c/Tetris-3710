@@ -1,3 +1,8 @@
+# *** CPSC 3710 - Term Project
+# *** Team Kernel Panic Attak:
+# *** Ethan Fisher,Patrick Bulbrook,
+# *** Kaelan Croucher
+
 import random
 from .tetromino import Tetromino
 
