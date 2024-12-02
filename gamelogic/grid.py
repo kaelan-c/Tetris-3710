@@ -1,8 +1,8 @@
 from .cell import Cell
-from panda3d.core import NodePath, Vec3, LineSegs, LColor
+from panda3d.core import NodePath, Vec3, LineSegs
 
 
-class Well:
+class Grid:
     def __init__(self, render_root, loader, width, depth, height):
         self.render_root = render_root
         self.loader = loader

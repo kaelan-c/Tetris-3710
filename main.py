@@ -2,7 +2,7 @@ from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import Point3, DirectionalLight, AmbientLight
 
-from gamelogic.well import Well
+from gamelogic.grid import Grid
 from gamelogic.bag import Bag
 from gamelogic.constants import GRID
 from gamelogic.constants import PIECES
@@ -40,7 +40,7 @@ class Tetris(ShowBase):
         self.render.setLight(self.ambientLightNodePath)
 
 # ********************* Render Tetris Grid
-        self.tetris_grid = Well(
+        self.tetris_grid = Grid(
             self.render,
             self.loader,
             self.grid_width,
@@ -61,12 +61,12 @@ class Tetris(ShowBase):
         self.skybox.setTwoSided(True)  # Render textures on both sides
 
         # Load the textures for each face of the skybox
-        self.front = self.loader.loadTexture("skybox/sky.jpg")
-        self.back = self.loader.loadTexture("skybox/sky.jpg")
-        self.left = self.loader.loadTexture("skybox/sky.jpg")
-        self.right = self.loader.loadTexture("skybox/sky.jpg")
-        self.up = self.loader.loadTexture("skybox/sky.jpg")
-        self.down = self.loader.loadTexture("skybox/sky.jpg")
+        self.front = self.loader.loadTexture("assets/skybox/sky.jpg")
+        self.back = self.loader.loadTexture("assets/skybox/sky.jpg")
+        self.left = self.loader.loadTexture("assets/skybox/sky.jpg")
+        self.right = self.loader.loadTexture("assets/skybox/sky.jpg")
+        self.up = self.loader.loadTexture("assets/skybox/sky.jpg")
+        self.down = self.loader.loadTexture("assets/skybox/sky.jpg")
 
         # Apply the textures to the faces
         self.skybox.setTexture(self.front, 0)  # front texture
